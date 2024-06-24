@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
-import { Box, Container, VStack, Heading, Text, Input, Button, Image, SimpleGrid, useToast } from "@chakra-ui/react";
-import { FaCloudUploadAlt } from "react-icons/fa";
+import { Box, Container, VStack, Heading, Text, Input, Button, Image, SimpleGrid, useToast, Flex } from "@chakra-ui/react";
+import { FaCloudUploadAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 
 const Index = () => {
   const [photos, setPhotos] = useState([]);
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [likes, setLikes] = useState({});
   const fileInputRef = useRef(null);
   const toast = useToast();
 
@@ -47,6 +48,13 @@ const Index = () => {
         isClosable: true,
       });
     }
+  };
+
+  const handleLike = (index) => {
+    setLikes(prevLikes => ({
+      ...prevLikes,
+      [index]: (prevLikes[index] || 0) + 1
+    }));
   };
 
   return (
@@ -106,15 +114,39 @@ const Index = () => {
           ) : (
             <SimpleGrid columns={[1, 2, 3]} spacing={4}>
               {photos.map((photo, index) => (
-                <Image
-                  key={index}
-                  src={photo}
-                  alt={`Uploaded photo ${index + 1}`}
-                  borderRadius="md"
-                  objectFit="cover"
-                  boxSize="100%"
-                  aspectRatio="1"
-                />
+                <Box key={index} position="relative">
+                  <Image
+                    src={photo}
+                    alt={`Uploaded photo ${index + 1}`}
+                    borderRadius="md"
+                    objectFit="cover"
+                    boxSize="100%"
+                    aspectRatio="1"
+                  />
+                  <Flex
+                    position="absolute"
+                    bottom="0"
+                    left="0"
+                    right="0"
+                    bg="rgba(0,0,0,0.5)"
+                    p={2}
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Button
+                      leftIcon={likes[index] ? <FaHeart /> : <FaRegHeart />}
+                      colorScheme={likes[index] ? "red" : "gray"}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleLike(index)}
+                    >
+                      Like
+                    </Button>
+                    <Text color="white" fontWeight="bold">
+                      {likes[index] || 0} likes
+                    </Text>
+                  </Flex>
+                </Box>
               ))}
             </SimpleGrid>
           )}
